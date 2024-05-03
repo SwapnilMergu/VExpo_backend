@@ -33,8 +33,25 @@
                                     <label for="exampleInputEmail1" class="form-label">contact No.</label>
                                     <input type="text" name="contact" value="{{ vendor.contact }}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                                     {% if form.contact.errors %}
-                     <span style="color:red;font-size:14px;">{{form.contact.errors}}</span>
-                    {% endif %}
+                                        <span style="color:red;font-size:14px;">{{form.contact.errors}}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select name="category" value="{{vendor.category}}" class="form-control" id="category" aria-describedby="emailHelp">
+                                        <option value="">Select Category</option>
+                                        {% for c in categories %}
+                                            {% if c.id|add:"0" == vendor.category.id|add:"0" %}
+                                                <option value="{{c.id}}" selected="selected">{{c.cname}}</option>
+                                            {%else%}
+                                                <option value="{{c.id}}">{{c.cname}}</option>
+                                            {% endif %}
+                  
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.errors.cate_type %}
+                                        <span style="color:red;font-size:14px;">{{ form.errors.cate_type }}</span>
+                                    {% endif %}
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary col-lg-2" style="margin-left:13px; margin-top:10px">Submit</button>

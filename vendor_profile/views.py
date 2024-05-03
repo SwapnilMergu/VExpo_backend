@@ -10,6 +10,7 @@ from django.db import connection
 from visitors.models import Visitors
 from booking.models import Booking
 from django.conf import settings
+from categories.models import Categories
 from django.contrib.auth.hashers import make_password
 from django.core.files.storage import FileSystemStorage
 import json
@@ -26,6 +27,7 @@ def view_vendor(request):
     return render(request, 'view_vendors.html', {'user_list': vendor_list})
 
 def create_vendor(request):
+    categories= Categories.objects.all().filter(admin_id=request.user.admin.id)
     if request.method == 'POST':
         form = VendorForm(request.POST)
         if form.is_valid():
@@ -33,6 +35,9 @@ def create_vendor(request):
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             contact = form.cleaned_data['contact']
+            category_id = request.POST['category']
+
+            category = Categories.objects.get(id=category_id)
             password = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
             en_password= make_password(password)
             
@@ -55,6 +60,7 @@ def create_vendor(request):
                 vendor=vendor,
                 email=email,
                 contact= contact,
+                category= category,
                 rating=0,
                 visits=0
             )
@@ -70,7 +76,7 @@ def create_vendor(request):
         else:
             return render(request, 'add_vendor.html', {'form': form})
         
-    return render(request,'add_vendor.html',{})
+    return render(request,'add_vendor.html',{"categories":categories})
 
 def update_vendor(request, pk):
     vendor = get_object_or_404(VendorProfile,pk=pk)
