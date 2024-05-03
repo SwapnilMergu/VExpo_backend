@@ -1,0 +1,90 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block content %}
+{% block dashboardActive %}active{% endblock dashboardActive %}
+
+{% block role %}Organizer - {{request.user}} {% endblock role %}
+<div class="container-fluid">
+    <!--  Row 1 -->
+    <div class="row">
+      <div class="col-lg-9 d-flex align-items-strech">
+        <div class="card w-100">
+          <div class="card-body">
+            <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+              <div class="mb-3 mb-sm-0">
+                <h5 class="card-title fw-semibold">Registrations Overview</h5>
+              </div>
+              {% comment %} <div>
+                <select class="form-select">
+                  <option value="1">March 2023</option>
+                  <option value="2">April 2023</option>
+                  <option value="3">May 2023</option>
+                  <option value="4">June 2023</option>
+                </select>
+              </div> {% endcomment %}
+            </div>
+            <div id="chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Yearly Breakup -->
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <div class="row alig n-items-start">
+                  <div class="col-8">
+                    <h5 class="card-title mb-9 fw-semibold">Total Attendees</h5>
+                    <h4 class="fw-semibold mb-3 fs-9 text-center">{{total_registration}}</h4>
+                    <div class="d-flex align-items-center pb-1">
+                     
+                     
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="d-flex justify-content-end">
+                      <div
+                        style="background-color: #f76b07"
+                        class="text-white rounded-circle p-6 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-id-badge fs-10"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <!-- Monthly Earnings -->
+            <div class="card">
+              <div class="card-body">
+                <div class="row alig n-items-start">
+                  <div class="col-8">
+                    <h5 class="card-title mb-9 fw-semibold"> Total Vendors </h5>
+                    <h4 class="fw-bold mb-3 fs-9 text-center">{{total_vendors}}</h4>
+                    <div class="d-flex align-items-center pb-1">
+                     
+                     
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="d-flex justify-content-end">
+                      <div
+                      style="background-color: #333333"
+                        class="text-white rounded-circle p-6 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-user fs-10"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% comment %} <div id="earning"></div> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+{% endblock content %}

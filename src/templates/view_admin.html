@@ -1,0 +1,94 @@
+{% extends "super_base.html" %}
+{% load static %}
+
+{% block organizerActive %}active{% endblock organizerActive %}
+
+{% comment %} {% block title %}{% endblock title %} {% endcomment %}
+{% block role %}SuperUser - {{request.user}}{% endblock role %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <!--  Row 1 -->
+    <script>
+      var x = localStorage.getItem("token");
+      console.log("token : "+x)
+    </script>
+
+    <div class="row">
+      <a href="create"><button class="btn btn-primary" style="float:right;">Add Organizer</button></a>
+      <div class="col-lg-10 d-flex align-items-stretch mt-5 m-auto">
+        <div class="card w-100">
+          <div class="card-body p-4">
+            <h5 class="card-title fw-semibold mb-4">Organizer List</h5>
+            <div class="table-responsive">
+              <table class="table text-nowrap mb-0 align-middle">
+                <thead class="text-dark fs-4">
+                  <tr>  
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Id</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Name</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Email</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Category</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Contact</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Operations</h6>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for user in user_list %}
+                  <tr>
+                    <td class="border-bottom-0"><h6 class="fw-semibold mb-0"></h6>{{ user.id }}</h6></td>
+                    <td class="border-bottom-0">
+                        <h6 class="fw-semibold mb-1">{{ user.full_name }}</h6>
+                    </td>
+                    <td class="border-bottom-0">
+                      <h6 class="fw-semibold mb-1">{{user.email}}</h6>
+                  </td>
+                  <td class="border-bottom-0">
+                    <h6 class="fw-semibold mb-1">{{user.category}}</h6>
+                </td>
+                    <td class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0 fs-4">{{user.contact}}</h6>
+                    </td>
+                    <td class="border-bottom-0">
+                      <div class="row">
+                        {% comment %} {{route('vendor.edit',user.id)}} {% endcomment %}
+                        <a href="{% url "update_admin" user.pk %}" class="btn btn-warning btn-sm col-md-4">Update</a>
+                        <form method="post" class="col-md-4" action="{% url "delete_admin" user.pk %}">
+                          {%csrf_token%}
+                          <input type="submit" value="Delete" class="btn btn-danger btn-sm"/>
+                          {% if form.deletion.errors %}
+                              {{form.deletion.errors}}
+                          {% endif %} 
+                        </form>
+                    </div>
+                    </td>
+                  </tr> 
+                  {% endfor %}
+                             
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      
+      
+     
+      </div>
+    </div>
+    
+{% endblock content %}  

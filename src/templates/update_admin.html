@@ -1,0 +1,69 @@
+{% extends "super_base.html" %}
+{% load static %}
+{% block role %}SuperUser{% endblock role %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card" style="width:80%; margin:auto">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Organizer Edit</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" action="{% url "update_admin" admin.id %}">
+                            {% csrf_token %}
+                            {% comment %} {% method 'PATCH' %} {% endcomment %}
+                            <div class="row">
+                                <div class="mb-3 col-lg-6">
+                                    <label for="exampleInputEmail1" class="form-label">Full Name</label>
+                                    <input type="text" name="name" value="{{ admin.full_name }}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                    {% if form.name.errors %}
+                                        <span style="color:red;font-size:14px;">{{ form.name.errors }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="exampleInputEmail1" class="form-label">Email address</label>
+                                    <input type="email" name="email" value="{{ admin.email }}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                    {% if form.email.errors %}
+                                        <span style="color:red;font-size:14px;">{{form.email.errors}}</span>
+                                    {%endif%}
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="exampleInputEmail1" class="form-label">contact No.</label>
+                                    <input type="text" name="contact" value="{{ admin.contact }}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                    {% if form.contact.errors %}
+                                    <span style="color:red;font-size:14px;">{{form.contact.errors}}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select name="category" value="{{admin.category}}" class="form-control" id="category" aria-describedby="emailHelp">
+                                        <option value="">Select Category</option>
+                                        {% for c in categories %}
+                                            {% if c.id|add:"0" == admin.category.id|add:"0" %}
+                                                <option value="{{c.id}}" selected="selected">{{c.cname}}</option>
+                                            {%else%}
+                                                <option value="{{c.id}}">{{c.cname}}</option>
+                                            {% endif %}
+                  
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.errors.cate_type %}
+                                        <span style="color:red;font-size:14px;">{{ form.errors.cate_type }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                            </div>
+                            <button type="submit" class="btn btn-primary col-lg-2" style="margin-left:13px; margin-top:10px">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

@@ -1,0 +1,186 @@
+{% extends "vendor_base.html" %}
+{% load static %}
+{% block title %} Vertex{% endblock title %}
+{% block role %}Vendor- {{request.user}}{% endblock role %}
+
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script>
+  
+  var selectedDate=""
+  
+  function formatDate(dateString) {
+    const parts = dateString.split('-');
+    const year = parts[0];
+    const month = parts[1].padStart(2, '0');
+    const day = parts[2].padStart(2, '0');
+  
+    return `${day}/${month}/${year}`;
+  }
+    
+$(document).ready(function() {
+
+
+  $('#filterDate').change(function() {
+    const selectedDate = $(this).val();
+    // Your logic to filter data based on selectedDate goes here
+    const date= formatDate(selectedDate);
+    console.log("Selected date:", date);  // Example placeholder
+    document.getElementById("date-container").innerHTML = "Users Visited - "+date ;
+  });
+  });
+
+</script>
+
+
+
+<div class="container-fluid">
+    <!--  Row 1 -->
+    <div class="row">
+      <div class="col-lg-10 d-flex align-items-stretch mt-5 m-auto">
+        <div class="card w-100">
+          <div class="card-body p-1">
+            <div class="row">
+              <h5 class="card-title fw-semibold fs-9 mb-4 pt-2 pb-2 col-9 m-auto" id="date-container">Users Visited Today</h5>
+              <div class="col-3 date-filter">
+                <input  type="date" value="" id="filterDate"/>
+              </div>
+            </div> 
+            <div class="table-responsive">
+              <table class="table text-nowrap mb-0 align-middle text-center" id="bookingsTable">
+                <thead class="text-dark fs-4">
+                  <tr>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Sr.No</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Name</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Contact</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Ratings</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Review</h6>
+                    </th>
+                    <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Date</h6>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for v in visitors %}
+                    <tr>
+                      <td class="border-bottom-0"><h6 class="fw-semibold mb-0"></h6>{{forloop.counter}}</h6></td>
+                      <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-1">{{v.visitors.first_name}} {{v.visitors.last_name}}</h6>
+                      </td>
+                      <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-1">{{v.visitors.contact}}</h6>
+                      </td>
+                      <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0 fs-4">{{v.rating}}</h6>
+                      </td>
+                      <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0 fs-4">{{v.review}}</h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0 fs-4">{{ v.created_at|date:"d/m/Y" }}</h6>
+                          {% comment %} <h6 class="fw-semibold mb-0 fs-4">{{\Carbon\Carbon::parse($v->created_at)->format('d-m-Y') }}</h6> {% endcomment %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  {% comment %} @endforeach {% endcomment %}
+                </tbody>
+              </table>
+              <script type="text/javascript">
+                
+                $('#filterDate').change(function() {
+                  const selectedDate = $(this).val();
+                  const date= formatDate(selectedDate);
+                  const bookingsTable = document.getElementById('bookingsTable');
+                  const tbody = bookingsTable.querySelector('tbody');  // Cache tbody element
+                  $.ajax(
+                {
+                    type:"GET",
+                    url: "/api/visits/bydate",
+                    data:{
+                             selectedDate: date
+                    },
+                    success: function( data ) 
+                    {
+                        bookings= data.context
+                        console.log("DATA : ",typeof(bookings))
+                        console.log("DATA : ",bookings)
+                        console.log("inside filter ")
+                        tbody.innerHTML = '';  // Clear existing table rows
+                   
+                    var count=1;
+                    var created_at=""
+                    var formated_date=""
+                    for(booking of bookings){
+                      created_at=booking[5]
+                    const tableRow = document.createElement('tr');
+                        
+                    // Add booking data cells to the table row (replace with your data)
+                    const srNoCell = document.createElement('td');
+                    srNoCell.textContent = count+"";  // Assuming a 'counter' property for Sr. No
+                    tableRow.appendChild(srNoCell);
+
+                    const nameCell1 = document.createElement('td');
+                    nameCell1.textContent = `${booking[0]} ${booking[1]}`;
+                    nameCell1.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(nameCell1);
+
+                    const nameCell2 = document.createElement('td');
+                    nameCell2.textContent = `${booking[2]}`;
+                    nameCell2.classList.add('fw-semibold','mb-0','fs-3');
+
+                    tableRow.appendChild(nameCell2);
+
+                    const nameCell3 = document.createElement('td');
+                    nameCell3.textContent = `${booking[3]}`;
+                    nameCell3.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(nameCell3);
+                    
+                    const company = document.createElement('td');
+                    company.textContent = `${booking[4]}`;
+                    company.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(company);
+                    
+                    const nameCell4 = document.createElement('td');
+                    formated_date=created_at.split("T")[0].split("-").reverse().join("/")
+
+                    nameCell4.textContent = formated_date;
+                    nameCell4.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(nameCell4);
+
+                    
+                    tbody.appendChild(tableRow);
+                    count+=1;
+                    } 
+    
+
+                    }
+                 })
+                  console.log("Selected date:", date);  // Example placeholder
+                  document.getElementById("date-container").innerHTML = date+" - Bookings" ;
+                });
+
+               
+            </script>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+
+      </div>
+    </div>
+
+{% endblock content %}

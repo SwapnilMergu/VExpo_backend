@@ -1,0 +1,332 @@
+{% extends "admin_base.html" %}
+{% load qr_code %}
+{% load static %}
+{% block title %}VExpo{% endblock title %}
+{% block categoriesActive %}{% endblock categoriesActive %}
+
+{% block role %}Organizer - {{request.user}}{% endblock role %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="container-fluid row">
+        <div class="card col-md-9" style=" margin:auto">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Organizer Profile</h5>
+                <form method="post" action="{% url "update_admin_profile" %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">Event Name</label>
+                            <input type="text" name="event_name" value="{{request.POST.event_name | default:admin.event_name}}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.errors.event_name %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.event_name }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" name="full_name" value="{{request.POST.full_name | default:admin.full_name}}" class="form-control" id="full_name" aria-describedby="emailHelp">
+                            {% if form.errors.full_name %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.full_name }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">contact No.</label>
+                            <input type="text" name="contact" value="{{request.POST.contact | default:admin.contact}}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.errors.contact %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.contact }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">whatsapp No</label>
+                            <input type="text" name="whatsapp_no" value="{{request.POST.whatsapp_no | default:admin.whatsapp_no}}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.whatsapp_no.errors %}
+                                <span style="color:red;font-size:14px;">{{ form.whatsapp_no.errors }}</span>
+                              {% endif %}
+                          </div>
+                          <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">Date of Birth</label>
+                            <input type="date" name="dob" value="{{request.POST.DOB | default:admin.DOB}}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.dob.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.dob.errors }}</span>
+                          {% endif %}
+                          </div>
+                        <div class="mb-3 col-lg-6">
+                            <label for="category" class="form-label">Category</label>
+                            <select name="category" value="{{request.POST.category | default:""}}" class="form-control" id="category" aria-describedby="emailHelp">
+                                <option value="">Select Category</option>
+                                {% for c in categories %}
+                                    {% if c.id|add:"0" == admin.category.id|add:"0" %}
+                                        <option value="{{c.id}}" selected="selected">{{c.cname}}</option>
+                                    {%else%}
+                                        <option value="{{c.id}}">{{c.cname}}</option>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </select>
+                            {% if form.errors.cate_type %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.cate_type }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-6">
+
+                            {% if  admin.logo%}
+                                {% comment %} <span style="color: green;"><i class="fas fa-check"></i></span> {% endcomment %}
+                                <img src="{{ MEDIA_URL }}{{admin.logo}}" height="50px" width="50px"></br>
+                            {% endif %}
+                            <label for="exampleInputEmail1" class="form-label">Logo <span style="font-size:13px;">(1 : 1)</span></label>
+                            <input type="file" name="logo" value="{{request.POST.logo | default:admin.logo}}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.errors.logo %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.logo}}</span>
+                            {% endif %}
+                        </div>
+
+                        {% comment %} <div class="mb-3 col-lg-6">
+                            
+                            <label for="exampleInputEmail1" class="form-label">Type</label>{{admin.type}}
+                            <select name="type" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                <option value="">Select Type</option>
+                                {% if admin.cat_type == "Image" %}
+                                    <option value="{{request.POST.cat_type |admin.cat_type}}" selected="selected">{{request.POST.cat_type |admin.cat_type}}</option>
+                                    <option value="PDF" >PDF</option>
+                                {% endif %}
+                                {% if admin.cat_type == "PDF" %}
+                                    <option value="{{request.POST.cat_type |admin.cat_type}}" selected="selected">{{request.POST.cat_type |admin.cat_type}}</option>
+                                    <option value="Image" >Image</option>
+                                {% endif %}
+                            </select>
+                            {% if form.errors.type %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.type}}</span>
+                            {% endif %}
+                        </div> {% endcomment %}
+
+                        <div class="mb-3 col-lg-6">
+                            {% if  admin.catalog %}
+                                <a href="{{MEDIA_URL}}{{admin.catalog}}" target="_blank">Click Here</a> to view catalog<br>
+                                {% comment %} <span style="color: green;"><i class="fas fa-check"></i></span> {% endcomment %}
+                            {% endif %}
+                            <label for="exampleInputEmail1" class="form-label">Catalog <span style="font-size:13px;">(3 : 2)</span></label>
+                            <input type="file" name="catalog" value="{{request.POST.catalog | default:admin.catalog}}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.errors.catalog %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.catalog}}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            {% if  admin.banner %}
+                                <a href="{{MEDIA_URL}}{{admin.banner}}" target="_blank">Click Here</a> to view banner<br>
+                                {% comment %} <span style="color: green;"><i class="fas fa-check"></i></span> {% endcomment %}
+                            {% endif %}
+                            <label for="banner" class="form-label">Banner <span style="font-size:13px;">(2 : 3)</span></label>
+                            <input type="file" name="banner" value="{{request.POST.catalog | default:admin.banner}}" class="form-control" id="banner" aria-describedby="emailHelp">
+                            {% if form.errors.banner %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.banner}}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label for="price" class="form-label">Entry price (₹)</label>
+                            <input type="text" name="price" value="{{request.POST.price | default:admin.price}}" class="form-control" id="price" aria-describedby="emailHelp">
+                            {% if form.price.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.price.errors }}</span>
+                          {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label for="start_date" class="form-label">Exhibition start date</label>
+                            <input type="date" name="start_date" value="{{request.POST.start_date | default:admin.start_date}}" class="form-control" id="start_date" aria-describedby="emailHelp">
+                            {% if form.dob.start_date %}
+                            <span style="color:red;font-size:14px;">{{ form.errors.start_date }}</span>
+                          {% endif %}
+                          </div>
+                          <div class="mb-3 col-lg-6">
+                            <label for="end_date" class="form-label">Exhibition end date</label>
+                            <input type="date" name="end_date" value="{{request.POST.end_date | default:admin.end_date}}" class="form-control" id="end_date" aria-describedby="emailHelp">
+                            {% if form.end_date.start_date %}
+                            <span style="color:red;font-size:14px;">{{ form.errors.end_date }}</span>
+                          {% endif %}
+                          </div>
+                          
+                        <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">Facebook Link</label>
+                            <input type="text" name="facebook" value="{%if social_links%}{{social_links.facebook}}{%else%}{{request.POST.facebook}}{%endif%}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.facebook.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.facebook.errors }}</span>
+                          {% endif %}
+                        </div>
+      
+                          <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">Instagram Link</label>
+                            <input type="text" name="instagram" value="{%if social_links%}{{social_links.instagram}}{%else%}{{request.POST.instagram}} {%endif%}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.instagram.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.instagram.errors }}</span>
+                          {% endif %}
+                          </div>
+      
+                          <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">Twitter (X) Link</label>
+                            <input type="text" name="twitter" value="{%if social_links%}{{social_links.twitter}}{%else%}{{request.POST.twitter}}{%endif%}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.twitter.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.twitter.errors }}</span>
+                          {% endif %}
+                          </div>
+      
+                          <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">Linked In Link</label>
+                            <input type="text" name="linked_in" value="{%if social_links%}{{social_links.linked_in}}{%else%}{{request.POST.linked_in}}{%endif%}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.linked_in.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.linked_in.errors }}</span>
+                          {% endif %}
+                          </div>
+                          <div class="mb-3 col-lg-6">
+                            <label for="exampleInputEmail1" class="form-label">YouTube Link</label>
+                            <input type="text" name="youtube" value="{%if social_links%}{{social_links.youtube}}{%else%}{{request.POST.youtube}}{%endif%}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            {% if form.youtube.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.youtube.errors }}</span>
+                          {% endif %}
+                          </div>
+
+                          <div class="mb-3 col-lg-6">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" name="city" value="{{request.POST.city | default:admin.city}}" class="form-control" id="city" aria-describedby="emailHelp">
+                            {% if form.city.errors %}
+                            <span style="color:red;font-size:14px;">{{ form.city.errors }}</span>
+                          {% endif %}
+                          </div>
+                      
+                        <div class="mb-3 col-lg-12">
+                            <label for="exampleInputEmail1" class="form-label">Address</label>
+                            <textarea name="address" value="{{request.POST.address | default:admin.address}}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" rows="2" cols="4">{{request.POST.address | default:admin.address}}</textarea>
+                            {% if form.errors.address %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.address}}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 col-lg-12">
+                            <label for="exampleInputEmail1" class="form-label">About Event</label>
+                            <textarea class="form-control" name="about_event" id="summernote" >{{request.POST.about_event | default:admin.about}}</textarea>
+                            {% if form.errors.about_event %}
+                                <span style="color:red;font-size:14px;">{{ form.errors.about_event}}</span>
+                            {% endif %}
+                          </div>
+                        <button type="submit" class="btn btn-primary col-lg-2" style="margin-left:13px; margin-top:10px">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-3 text-center" style="margin-top:50px">
+            <div id="qrContainer111">
+                <div>
+                    {% comment %} {{ qr|safe }} {% endcomment %}
+                    {% qr_from_text admin.id size="M" %}
+                </div>
+                <button id="downloadButton" class="btn btn-success btn-sm mt-3">Download QR Code</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+        
+    </div>
+    
+
+   
+
+
+
+
+
+
+<div class="card mt-3 " id="qrContainer" style="width: 30rem; margin: auto; background-color: #fff; height:auto; box-shadow: 0px 0px 15px 10px lightgray;display:block;">
+    
+    <div class="card-text">
+    <br>
+    <div class=" d-flex justify-content-center">
+    <img src="{{MEDIA_URL}}{{admin.logo}}" class="imglogo">
+    </div>
+    <h3 >{{admin.event_name}}</h3>
+    <h5 >{{adminReg.full_name}}</h5>
+    <div class="main1">
+    <div class="line"></div>
+
+    </div>
+
+    <script>
+    for(i=1; i<=21; i++)
+    {
+    document.write("<div class='line'></div>");
+    }
+    </script>
+
+    <div id="parallelogram">
+    <h3 style="color:black;">SCAN IT</h3>
+    </div>
+    <div class="main">
+    <div id="line1"></div>
+    </div>
+
+    <script>
+    for(i=1; i<=21; i++)
+    {
+    document.write("<div id='line1'></div>");
+    }
+    </script>
+    <div id="triangle-down"></div>
+    <div class="d-flex justify-content-center mt-4 img-section" width="100%">
+        {% comment %} <object type="image/svg+xml" data="data:image/svg+xml;charset=utf8,{{ qr }}">
+            Your browser does not support SVG
+        </object> {% endcomment %}
+        
+        {% qr_from_text admin.id size=25 version=3 %}
+        {% comment %} {{ download_qr|safe }} {% endcomment %}
+    </div><br>
+    <p style="color:black;">Concepted by <b>Vertex Technosys</b></p></br>
+</div>
+
+
+
+
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+<script type="text/javascript">
+    $('#summernote').summernote({
+        height: 400
+    });
+</script>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+                        <script>
+
+                            function downloadQRCode() {
+                                var qrContainer = document.getElementById('qrContainer');
+
+                                qrContainer.style.display="block";
+
+                                html2canvas(qrContainer).then(function(canvas) {
+                                    var dataUri = canvas.toDataURL('files/png');
+
+                                    var tempLink = document.createElement('a');
+                                    tempLink.href = dataUri;
+                                    tempLink.download = 'qrcode.png';
+
+                                    document.body.appendChild(tempLink);
+
+                                    tempLink.click();
+
+                                    document.body.removeChild(tempLink);
+                                });
+                                qrContainer.style.display="none";
+                            }
+                            
+                            document.getElementById('downloadButton').addEventListener('click', downloadQRCode);
+                      
+                        </script>
+
+
+{% endblock content %}
