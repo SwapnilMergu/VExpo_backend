@@ -79,10 +79,14 @@ def create_vendor(request):
     return render(request,'add_vendor.html',{"categories":categories})
 
 def update_vendor(request, pk):
+    categories= Categories.objects.all().filter(admin_id=request.user.admin.id)
     vendor = get_object_or_404(VendorProfile,pk=pk)
+    stall= Stalls.objects.get(vendor=vendor)
     if request.method == 'POST':
         form = VendorForm(request.POST)
         if form.is_valid():
+            category_id=request.POST.get('category')
+            category = Categories.objects.get(id=category_id)
             vendor.full_name = request.POST.get('name')
             vendor.email = request.POST.get('email')
             vendor.contact = request.POST.get('contact')
@@ -92,10 +96,11 @@ def update_vendor(request, pk):
             customUser.email = request.POST.get('email')
             customUser.save()  
 
-            #stall
-            stall= Stalls.objects.get(vendor_id=pk)
+
             stall.email= request.POST.get('email')
             stall.contact= request.POST.get('contact')
+            stall.category = category
+            stall.save()
 
             return redirect('view_vendor')  
 
@@ -104,17 +109,16 @@ def update_vendor(request, pk):
         
         # admin.save()
         #return redirect('item_list')
-    return render(request, 'update_vendor.html', {'vendor': vendor})
+    # print("\n\ncontact:  ",vendor.contact)
+    return render(request, 'update_vendor.html', {'vendor': vendor,"stall":stall,"categories":categories})
 
 
 def delete_vendor(request, pk):
-    vendor_register = get_object_or_404(VendorProfile, pk=pk)
+    vendor_profile = get_object_or_404(VendorProfile, pk=pk)
     if request.method == 'POST':
-        user= CustomUser.objects.filter(vendor_id=pk)
-        vendor_profile= VendorProfile.objects.filter(vendor_id=pk)
+        user= CustomUser.objects.get(vendor_id=pk)
         vendor_profile.delete()
-        vendor_register.delete()
-        user.delete()
+        user.delete()   
         return redirect('view_vendor')
     return render(request,'view_vendor.html',{'deletion':'<script>alert("Deletection failed")</script>'})
 

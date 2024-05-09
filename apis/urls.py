@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     # path('api/demo/',views.demo,name='demo_api'),
     # path('api/password_demo',views.PasswordDemo.as_view(),name='password_demo'),
+    
     #visitor 
     path('api/register',views.VisitorsRegistrationView.as_view(),name='register_api'),
     path('api/login',views.VisitorsLoginView.as_view(),name='visitor_login'),
@@ -15,6 +16,9 @@ urlpatterns = [
 
     #get stall
     path('api/get_stall/<int:id>',views.StallView.as_view(),name='get_stalls'),    
+
+    #send ratings
+    path('api/stall_rating',views.VisitorStallRatingView.as_view(),name='visitor_rating'),
 
     #stall visit
     path('api/stall_visit',views.VisitorStallVisitView.as_view(),name='stall_visit'),
@@ -38,8 +42,10 @@ urlpatterns = [
     
 
     #recommend
-    path('api/recommend/<int:id>',views.RecommendationsStallView.as_view(),name='recommend_stall'),
+    path('api/recommend',views.RecommendationsStallView.as_view(),name='recommend_stall'),
     path('api/CSVData/<int:id>',views.CSVData.as_view(),name='recommend_stall_model'),
+    path('api/GetDataFromDB',views.GetDataFromDB.as_view(),name='GetDataFromDB'),
+    
 
     path('api/dashboard',views.getDashoard,name='dashboard'),
     path('api/dashboard/admin',views.getAdminDashoard,name='admin_dashboard'),
@@ -52,7 +58,8 @@ urlpatterns = [
     path('api/getVendors/<int:pk>', views.VendorListView.as_view() , name='getVendors'),
     path('api/getVendor/<int:pk>', views.VendorDetailView.as_view() , name='getVendor'),
 
-
+    #top categories
+    path('api/top_categories',views.TopCategory.as_view(),name='top_categories'),
 
     # path('api/users/',views.usersData,name='users_api'),
     # path('api/login/',views.login,name='login_api'),

@@ -57,28 +57,28 @@
                         <thead class="text-dark fs-4">
                           <tr>
                             <th class="border-bottom-0">
-                              <h6 class="fw-semibold mb-0">Id</h6>
+                              <h6 class="fw-semibold mb-0 fs-5">Sr. No.</h6>
                             </th>
                             <th class="border-bottom-0">
-                              <h6 class="fw-semibold mb-0">Category Name</h6>
+                              <h6 class="fw-semibold mb-0 fs-5">Category Name</h6>
                             </th>
                             <th class="border-bottom-0">
-                              <h6 class="fw-semibold mb-0">Update</h6>
+                              <h6 class="fw-semibold mb-0 text-center fs-5"></h6>
                             </th>
                             <th class="border-bottom-0">
-                              <h6 class="fw-semibold mb-0">Delete</h6>
+                              <h6 class="fw-semibold mb-0 text-center fs-5"></h6>
                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           {% for category in categories %}
                           <tr>
-                            <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ category.id }}</h6></td>
+                            <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{forloop.counter}}</h6></td>
                             <td class="border-bottom-0">
                               <h6 class="fw-semibold mb-1">{{ category.cname }}</h6>
                             </td>
                             <td class="border-bottom-0">
-                              <p class="mb-0 fw-normal"><a href="{% url 'update_categories' category.id %}" class="btn btn-primary">Update</a></p>
+                              <p class="mb-0 fw-normal"><a href="{% url 'update_categories' category.id %}" class="btn btn-primary" style="background-color:#333;border-color:#333">Update</a></p>
                             </td>
                             <td class="border-bottom-0">
                               <form method="post" action="{% url 'delete_categories' category.id %}">

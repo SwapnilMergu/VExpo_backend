@@ -71,7 +71,7 @@
 
                     <div class="mb-3 col-lg-6">
                       <label for="instagram" class="form-label">Instagram Link</label>
-                      <input type="text" name="instagram" value="{%if social_links%}{{social_links.instagram}}{%else%}{{request.POST.instagram}} {%endif%}" class="form-control" id="instagram" aria-describedby="emailHelp">
+                      <input type="text" name="instagram" value="{%if social_links%}{{social_links.instagram}}{%else%}{{request.POST.instagram}}{%endif%}" class="form-control" id="instagram" aria-describedby="emailHelp">
                       {% if form.instagram.errors %}
                       <span style="color:red;font-size:14px;">{{ form.instagram.errors }}</span>
                     {% endif %}

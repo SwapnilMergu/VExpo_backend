@@ -38,10 +38,10 @@
                                 </div>
                                 <div class="mb-3 col-lg-6">
                                     <label for="category" class="form-label">Category</label>
-                                    <select name="category" value="{{vendor.category}}" class="form-control" id="category" aria-describedby="emailHelp">
+                                    <select name="category" value="{{stall.category}}" class="form-control" id="category" aria-describedby="emailHelp">
                                         <option value="">Select Category</option>
                                         {% for c in categories %}
-                                            {% if c.id|add:"0" == vendor.category.id|add:"0" %}
+                                            {% if c.id|add:"0" == stall.category.id|add:"0" %}
                                                 <option value="{{c.id}}" selected="selected">{{c.cname}}</option>
                                             {%else%}
                                                 <option value="{{c.id}}">{{c.cname}}</option>

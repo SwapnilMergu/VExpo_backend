@@ -43,7 +43,7 @@ class VendorProfileSerializer(serializers.ModelSerializer):
 class VisitorsSerializer(serializers.ModelSerializer):
     class Meta:
         model= Visitors
-        fields= ['id','email','first_name','last_name','contact']
+        fields= ['id','email','first_name','last_name','contact',"company"]
 
 class RegistrationSerializer(serializers.ModelSerializer):
     # category = serializers.SlugRelatedField(slug_field='cname', queryset=AdminProfile.objects.all())  # Related field

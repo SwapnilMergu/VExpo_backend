@@ -61,6 +61,9 @@ $(document).ready(function() {
                       <h6 class="fw-semibold mb-0">Contact</h6>
                     </th>
                     <th class="border-bottom-0">
+                      <h6 class="fw-semibold mb-0">Company</h6>
+                    </th>
+                    <th class="border-bottom-0">
                       <h6 class="fw-semibold mb-0">Ratings</h6>
                     </th>
                     <th class="border-bottom-0">
@@ -80,6 +83,9 @@ $(document).ready(function() {
                       </td>
                       <td class="border-bottom-0">
                           <h6 class="fw-semibold mb-1">{{v.visitors.contact}}</h6>
+                      </td>
+                      <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0 fs-4">{{v.visitors.company}}</h6>
                       </td>
                       <td class="border-bottom-0">
                           <h6 class="fw-semibold mb-0 fs-4">{{v.rating}}</h6>
@@ -130,33 +136,39 @@ $(document).ready(function() {
                     srNoCell.textContent = count+"";  // Assuming a 'counter' property for Sr. No
                     tableRow.appendChild(srNoCell);
 
-                    const nameCell1 = document.createElement('td');
-                    nameCell1.textContent = `${booking[0]} ${booking[1]}`;
-                    nameCell1.classList.add('fw-semibold','mb-0','fs-3');
-                    tableRow.appendChild(nameCell1);
+                    const name = document.createElement('td');
+                    name.textContent = `${booking[0]} ${booking[1]}`;
+                    name.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(name);
 
-                    const nameCell2 = document.createElement('td');
-                    nameCell2.textContent = `${booking[2]}`;
-                    nameCell2.classList.add('fw-semibold','mb-0','fs-3');
+                    const contact = document.createElement('td');
+                    contact.textContent = `${booking[2]}`;
+                    contact.classList.add('fw-semibold','mb-0','fs-3');
 
-                    tableRow.appendChild(nameCell2);
-
-                    const nameCell3 = document.createElement('td');
-                    nameCell3.textContent = `${booking[3]}`;
-                    nameCell3.classList.add('fw-semibold','mb-0','fs-3');
-                    tableRow.appendChild(nameCell3);
+                    tableRow.appendChild(contact);
                     
                     const company = document.createElement('td');
-                    company.textContent = `${booking[4]}`;
+                    company.textContent = `${booking[3]}`;
                     company.classList.add('fw-semibold','mb-0','fs-3');
                     tableRow.appendChild(company);
                     
-                    const nameCell4 = document.createElement('td');
-                    formated_date=created_at.split("T")[0].split("-").reverse().join("/")
 
-                    nameCell4.textContent = formated_date;
-                    nameCell4.classList.add('fw-semibold','mb-0','fs-3');
-                    tableRow.appendChild(nameCell4);
+                    const rating = document.createElement('td');
+                    rating.textContent = `${booking[4]}`;
+                    rating.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(rating);
+
+                    const review = document.createElement('td');
+                    review.textContent = `${booking[5]}`;
+                    review.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(review);
+
+                    const date = document.createElement('td');
+                    formated_date=`${booking[6]}`.split("T")[0].split("-").reverse().join("/")
+
+                    date.textContent = formated_date;
+                    date.classList.add('fw-semibold','mb-0','fs-3');
+                    tableRow.appendChild(date);
 
                     
                     tbody.appendChild(tableRow);

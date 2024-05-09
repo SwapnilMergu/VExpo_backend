@@ -20,7 +20,7 @@
                 <thead class="text-dark fs-4">
                   <tr>  
                     <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Id</h6>
+                      <h6 class="fw-semibold mb-0">Sr. No.</h6>
                     </th>
                     <th class="border-bottom-0">
                       <h6 class="fw-semibold mb-0">Name</h6>
@@ -39,7 +39,7 @@
                 <tbody>
                     {% for user in user_list %}
                   <tr>
-                    <td class="border-bottom-0"><h6 class="fw-semibold mb-0"></h6>{{ user.id }}</h6></td>
+                    <td class="border-bottom-0"><h6 class="fw-semibold mb-0"></h6>{{forloop.counter}}</h6></td>
                     <td class="border-bottom-0">
                         <h6 class="fw-semibold mb-1">{{ user.full_name }}</h6>
                     </td>

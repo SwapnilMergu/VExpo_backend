@@ -114,8 +114,9 @@ class VendorHome(APIView):
         ).count()
         todays_bookings=Booking.objects.filter(
             stall__vendor_id=request.user.vendor_id,
-            created_at__gte=datetime.now().date(),
-            created_at__lte=datetime.now().date() + timedelta(days=1)
+            created_at__startswith=datetime.now().date(),
+            # created_at__gte=datetime.now().date(),
+            # created_at__lte=datetime.now().date() + timedelta(days=1)
         ).count()
         visitors= Visits.objects.all().filter(stalls__vendor_id=request.user.vendor_id)
         bookings= Booking.objects.all().filter(stall__vendor_id=request.user.vendor_id)
