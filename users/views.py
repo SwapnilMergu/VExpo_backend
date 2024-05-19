@@ -111,7 +111,7 @@ class VendorHome(APIView):
         todays_visitors=Visits.objects.filter(
             stalls__vendor_id=request.user.vendor_id,
             created_at__gte=datetime.now().date(),
-            created_at__lte=datetime.now().date() + timedelta(days=1)
+            created_at__lte=datetime.now().date()
         ).count()
         todays_bookings=Booking.objects.filter(
             stall__vendor_id=request.user.vendor_id,
