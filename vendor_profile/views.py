@@ -13,12 +13,14 @@ from django.conf import settings
 from categories.models import Categories
 from django.contrib.auth.hashers import make_password
 from django.core.files.storage import FileSystemStorage
+import pandas as pd
 import json
 import random
 import string
 import re 
 import os
 from datetime import datetime, date
+from django.utils import timezone
 
 # Create your views here.
 def view_vendor(request):
@@ -50,6 +52,7 @@ def create_vendor(request):
                 admin= request.user.admin,
                 rating=0
             )
+            
             user= CustomUser.objects.create(
                 email=email,
                 password= en_password,
@@ -262,3 +265,63 @@ def edit_profile(request):
         else:
             return render(request, 'update_profile.html', {"form":form,"vendor":vendor,"social_links":social_links})
     return render(request,"update_profile.html",{})
+
+
+def export_vendor_to_excel(request):
+    # Fetch data from your model
+    data = VendorProfile.objects.all().filter(admin_id=request.user.admin.id).values("full_name", "email", "contact", "address")
+
+    # Convert queryset to DataFrame
+    df = pd.DataFrame(list(data))
+
+    # Create a HttpResponse object with the appropriate Excel headers
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename='+str(datetime.now().date())+'_data.xlsx'
+
+    # Use Pandas to create an Excel writer and save the DataFrame to it
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    return response
+
+
+def export_users_visited_to_excel(request):
+    # Fetch data from your model
+    data = Visits.objects.all().filter(stalls__vendor_id=request.user.vendor.id).values("visitors__first_name", "visitors__last_name", "visitors__email", "visitors__contact","rating","review","created_at")
+
+    # Convert queryset to DataFrame
+    df = pd.DataFrame(list(data))
+
+    for col in ['created_at']:
+        if col in df.columns:
+            df[col] = df[col].apply(lambda x: timezone.localtime(x).replace(tzinfo=None) if pd.notnull(x) else x)
+    
+
+    # Create a HttpResponse object with the appropriate Excel headers
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename='+str(datetime.now().date())+'_data.xlsx'
+
+    # Use Pandas to create an Excel writer and save the DataFrame to it
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    return response
+
+def export_users_bookings_to_excel(request):
+    # Fetch data from your model
+    vendor= VendorProfile.objects.get(id=request.user.vendor.id)
+    stall= Stalls.objects.get(vendor=vendor)
+    data= Booking.objects.all().filter(stall=stall).values("visitor__first_name", "visitor__last_name", "visitor__email","visitor__contact","interest","time","date","status")
+
+    # Convert queryset to DataFrame
+    df = pd.DataFrame(list(data))
+   
+    # Create a HttpResponse object with the appropriate Excel headers
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename='+str(datetime.now().date())+'_data.xlsx'
+
+    # Use Pandas to create an Excel writer and save the DataFrame to it
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    return response

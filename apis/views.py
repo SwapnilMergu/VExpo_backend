@@ -200,6 +200,15 @@ class VisitorStallRatingView(APIView):
             visit.save()
             print("visit id : ",visit.id)
             serializer= serializers.VisitsSerializer(visit)
+            stall=Stalls.objects.get(id=request.data["stall_id"])
+            if visit.rating>1:
+                if stall.rating<1:
+                    stall.rating=visit.rating
+                else:
+                    print("\n\nstall rating :",(stall.rating+visit.rating)/2)
+                    stall.rating= (stall.rating+visit.rating)/2
+            stall.stall_visits=stall.stall_visits+1
+            stall.save()
             return Response({"status":"success",'msg': 'visitor data updated successfully',"visit":serializer.data},status=200)
         return Response({"status":"failed",'msg': 'failed to update user'},status=200)
 
@@ -389,13 +398,13 @@ class EventsByLocationView(CustomExceptionHandler,APIView):
         serializer= serializers.AdminProfileSerializer(joinAdmin,many=True)
         
         # return JsonResponse({"admin":serializer.data},safe=False)
-        return JsonResponse({"admin":serializer.data},safe=False)
+        return JsonResponse({"status":"success","admin":serializer.data},safe=False)
 
     
 class RecommendationsStallView(CustomExceptionHandler,APIView):
     authentication_classes = []
     permission_classes = []
-    def get(self, request,format=None):
+    def post(self, request,format=None):
 
         # stalls= Stalls.objects.all().filter(vendor__admin_id=id).filter(stall_visits__gt=10).order_by('-rating')  
         # admin= AdminProfile.objects.get(id=id)
@@ -787,7 +796,6 @@ class TopCategory(APIView):
         WHERE vp.admin_id = 8
         GROUP BY c.id
         ORDER BY num_visits DESC
-        
         LIMIT 4;"""
         ratings_df = pd.read_sql(query, connection)
         print("\n\n ratings_df:\n",ratings_df)
@@ -803,51 +811,70 @@ class TopCategory(APIView):
             
     
 def getSuperuserDashoard( request):
-    # visitors= Visits.objects.all().filter(stalls__vendor_id=request.user.vendor_id)
-    admin= AdminProfile.objects.all()
-    # max_val= admin.count()+2
+    # # visitors= Visits.objects.all().filter(stalls__vendor_id=request.user.vendor_id)
+    # admin= AdminProfile.objects.all()
+    # # max_val= admin.count()+2
 
-    today = date.today()  # Get today's date
+    # today = date.today()  # Get today's date
 
-    # Calculate desired month range (3 previous + 1 next)
-    start_month = today.month - 3
-    end_month = today.month 
+    # # Calculate desired month range (3 previous + 1 next)
+    # start_month = today.month - 3
+    # end_month = today.month 
 
-    # Handle month overflow cases (e.g., December + 1 = January of next year)
-    if start_month < 1:
-        start_month += 12  # Wrap around to previous year if necessary
-        start_year = today.year - 1
-    else:
-        start_year = today.year
+    # # Handle month overflow cases (e.g., December + 1 = January of next year)
+    # if start_month < 1:
+    #     start_month += 12  # Wrap around to previous year if necessary
+    #     start_year = today.year - 1
+    # else:
+    #     start_year = today.year
 
-    if end_month > 12:
-        end_month -= 12  # Wrap around to next year if necessary
-        end_year = today.year + 1
-    else:
-        end_year = today.year
+    # if end_month > 12:
+    #     end_month -= 12  # Wrap around to next year if necessary
+    #     end_year = today.year + 1
+    # else:
+    #     end_year = today.year
     
-    month_labels = [f"{calendar.month_name[month]}" for month in range(start_month, end_month + 1)]
-    if start_month != end_month:  # Add next month label if not the same as last month
-        month_labels.append(f"{calendar.month_name[end_month + 1]}")
+    # month_labels = [f"{calendar.month_name[month]}" for month in range(start_month, end_month + 1)]
+    # if start_month != end_month:  # Add next month label if not the same as last month
+    #     month_labels.append(f"{calendar.month_name[end_month + 1]}")
     
-    month_counts = [0 for i in month_labels]
+    # month_counts = [0 for i in month_labels]
 
-    for ad in admin:
-        ad_date = ad.created_at.date()
-        month = ad_date.month
+    # for ad in admin:
+    #     ad_date = ad.created_at.date()
+    #     month = ad_date.month
 
-        # Filter registrations based on desired month range
-        if start_year <= ad_date.year <= end_year and start_month <= month <= end_month:
-            month_counts[month_labels.index(calendar.month_name[month])] += 1
+    #     # Filter registrations based on desired month range
+    #     if start_year <= ad_date.year <= end_year and start_month <= month <= end_month:
+    #         month_counts[month_labels.index(calendar.month_name[month])] += 1
     
 
-    max_val=max(month_counts)+2
+    # max_val=max(month_counts)+2
+    query="""
+        SELECT c.cname as category, COUNT(r.id) AS registration
+        FROM admin_profile ap
+        RIGHT JOIN categories c ON c.id= ap.category_id
+        LEFT JOIN registration r ON r.admin_id = ap.id
+        WHERE c.superuser_id = 1
+        GROUP BY c.id
+        LIMIT 5;
+    """
+
+    cursor = connection.cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    cursor.close()
+    print("rows :   ",rows)
+
+    labels = [row[0] for row in rows]
+    counts = [row[1] for row in rows]
+    max_val=max(counts)+2
 
 
     context={
         "status":"success",
-        'labels': month_labels,
-        'values': month_counts,
+        'labels': labels,
+        'values': counts,
         'max_val': max_val
         }
     return  JsonResponse({"data":context},safe=False)
@@ -883,13 +910,45 @@ def getAdminDashoard( request):
         }
     return  JsonResponse({"data":context},safe=False)
 
+
+
+def getAdminCategoriesDashoard( request):
+    # visitors= Visits.objects.all().filter(stalls__vendor_id=request.user.vendor_id)
+    admin= AdminProfile.objects.get(id=request.user.admin_id)
+    query="""
+        SELECT c.cname as category, COUNT(v.id) AS registration
+        FROM vendor_profile vp
+        JOIN stalls as s ON s.vendor_id= vp.id
+        RIGHT JOIN categories c ON c.id= s.category_id
+        LEFT JOIN visits as v ON v.stalls_id= s.id
+        WHERE c.admin_id = %s
+        GROUP BY c.id
+        ORDER BY registration DESC
+        LIMIT 5;
+    """
+
+    cursor = connection.cursor()
+    cursor.execute(query, [admin.id])
+    rows = cursor.fetchall()
+    cursor.close()
+
+    labels = [row[0] for row in rows]
+    counts = [row[1] for row in rows]
+    max_val=max(counts)+2
+
+    context={
+        "status":"success",
+        'labels': labels,  # Serialize data for template
+        'values': counts,  # Serialize data for template
+        'max_val':max_val
+        }
+    return  JsonResponse({"data":context},safe=False)
+
 def getDashoard( request):
     vendor= VendorProfile.objects.get(id=request.user.vendor_id)
     visitors= Visits.objects.all().filter(stalls__vendor_id=request.user.vendor_id)
     bookings= Booking.objects.all().filter(stall__vendor_id=request.user.vendor_id)
     admin= AdminProfile.objects.get(id=vendor.admin_id)
-    max_val= visitors.count()+2
-
 
 
     start_date = datetime.strptime(admin.start_date, '%Y-%m-%d').date()
@@ -912,12 +971,14 @@ def getDashoard( request):
         date = visitor.created_at.date()
         date = str(date)
         counts[labels.index(date)] += 1
+    
+    max_val=max(counts)+2
 
     for booking in bookings:
-        format_date=booking.date
-        l_fd= format_date.split("/")
-        format_date= l_fd[2]+"-"+l_fd[1]+"-"+l_fd[0]
-        print("\n\n visitor : ",format_date,"---",booking.id,"\n\n")
+        format_date=booking.created_at.date()
+        # l_fd= format_date.split("/")
+        # format_date= l_fd[2]+"-"+l_fd[1]+"-"+l_fd[0]
+        # print("\n\n visitor : ",format_date,"---",booking.id,"\n\n")
     
         date = str(format_date)
         bookings_value[labels.index(date)] += 1
@@ -936,9 +997,20 @@ def get_booking_by_date(request):
         date= request.GET['selectedDate']
         print("\n\n date : ",date,"\n\n")
 
-        # data = list(Booking.objects.all().filter(date=date).values())
-        data = Booking.objects.select_related('visitor').filter(date=date)
+        stall= Stalls.objects.get(vendor_id=request.user.vendor.id)
+        data = Booking.objects.select_related('visitor').filter(stall_id=stall.id).filter(date=date)
         # serializer = serializers.BookingFilterSerializer(data, many=True)
+        context=[]
+        for booking in data:
+            context.append([booking.id,booking.visitor.first_name,booking.visitor.last_name,booking.visitor.contact,booking.visitor.company,booking.interest,booking.time,booking.date,booking.status])
+        
+        return JsonResponse({'context': context }, status=200)
+    return JsonResponse({'status': 'Invalid request'}, status=400)
+
+def get_booking(request):
+    if request.method == 'GET':
+        stall= Stalls.objects.get(vendor_id=request.user.vendor.id)
+        data = Booking.objects.select_related('visitor').filter(stall_id=stall.id)
         context=[]
         for booking in data:
             context.append([booking.id,booking.visitor.first_name,booking.visitor.last_name,booking.visitor.contact,booking.visitor.company,booking.interest,booking.time,booking.date,booking.status])
@@ -964,6 +1036,17 @@ def get_visits_by_date(request):
         
         return JsonResponse({'context': context }, status=200)
     return JsonResponse({'status': 'Invalid request'}, status=400)
+
+def get_visits(request):
+    if request.method == 'GET':
+        stall= Stalls.objects.get(vendor_id=request.user.vendor.id)
+        visitors= Visits.objects.select_related('visitors', 'stalls').filter(stalls=stall.id)
+        context=[]
+        for visitor in visitors:
+            context.append([visitor.visitors.first_name,visitor.visitors.last_name,visitor.visitors.contact,visitor.visitors.company,visitor.rating,visitor.review,visitor.created_at])
+        return JsonResponse({'context': context }, status=200)
+    return JsonResponse({'status': 'Invalid request'}, status=400)
+
 def group_visitors_by_date(visitors):
     grouped_data = {}
     for visitor in visitors:

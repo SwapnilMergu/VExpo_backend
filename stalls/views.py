@@ -15,7 +15,7 @@ from vendor_profile.models import VendorProfile
 def view_stall(request):
     
     vendor=VendorProfile.objects.get(id=request.user.vendor.id)
-    categories= Categories.objects.filter(admin_id=vendor.admin.id)
+    categories= Categories.objects.all().filter(admin_id=vendor.admin.id)
     stalls = Stalls.objects.get(vendor=request.user.vendor.id)
     admin= AdminProfile.objects.get(id=vendor.admin.id)
     

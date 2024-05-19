@@ -35,10 +35,12 @@ urlpatterns = [
     path('api/booking/<int:visitor_id>',views.BookingView.as_view(),name='get_booking'),
     path('api/booking',views.BookingView.as_view(),name='add_booking'),
     path('api/booking/bydate',views.get_booking_by_date,name='filter_booking'),
+    path('api/bookings',views.get_booking,name='all_bookings'),
     
     
     #visits
     path('api/visits/bydate',views.get_visits_by_date,name='filter_visits'),
+    path('api/visits',views.get_visits,name='all_visits'),
     
 
     #recommend
@@ -49,6 +51,7 @@ urlpatterns = [
 
     path('api/dashboard',views.getDashoard,name='dashboard'),
     path('api/dashboard/admin',views.getAdminDashoard,name='admin_dashboard'),
+    path('api/dashboard/admin/categories',views.getAdminCategoriesDashoard,name='admin_categories_dashboard'),
     path('api/dashboard/superuser',views.getSuperuserDashoard,name='superuser_dashboard'),
     
 

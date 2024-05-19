@@ -41,8 +41,8 @@ $(function () {
       // console.log(no_of_bookings,"\n",no_of_visitors,"\n",categories)
       var chart = {
         series: [
-          { name: "No. of Visitors:", data: no_of_visitors },
-          { name: "No. of Bookings:", data: no_of_bookings },
+          { name: "No. of Visitors", data: no_of_visitors },
+          { name: "No. of Bookings", data: no_of_bookings },
         ],
     
         chart: {
@@ -145,19 +145,17 @@ $(function () {
     }
     if(user_role=='admin'){
       console.log("inside admin")
-      fetch('/api/dashboard/admin')
+      console.log("/api/dashboard/admin/categories")
+      fetch('/api/dashboard/admin/categories')
     .then(response => response.json())
     .then(data => {
       no_of_visitors=data.data.values;
       var labels= data.data.labels;
-      categories=[]
       console.log("\n",no_of_visitors,"\n",categories)
-      labels.forEach(element => {
-        categories.push(element.split("-")[2]+"/"+element.split("-")[1]+"/"+element.split("-")[0])
-      });
+      
       var chart = {
         series: [
-          { name: "No. of Visitors:", data: no_of_visitors },
+          { name: "No. of Visitors", data: no_of_visitors },
         ],
     
         chart: {
@@ -207,7 +205,7 @@ $(function () {
     
         xaxis: {
           type: "category",
-          categories: categories,
+          categories: labels,
           labels: {
             style: { cssClass: "grey--text lighten-2--text fill-color" },
           },
@@ -272,7 +270,7 @@ $(function () {
         categories=data.data.labels
       var chart = {
         series: [
-          { name: "No. of Visitors:", data: no_of_visitors },
+          { name: "No. of Registrations", data: no_of_visitors },
         ],
     
         chart: {

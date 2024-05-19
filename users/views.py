@@ -12,6 +12,7 @@ from registration.models import Registration
 from booking.models import Booking
 from vendor_profile.models import VendorProfile
 from admin_profile.models import AdminProfile
+from visitors.models import Visitors
 from apis import serializers
 from visits.models import Visits
 from datetime import datetime, timedelta
@@ -79,7 +80,7 @@ class SuperUserHome(APIView):
     def get(self, request):
         total_vendors=VendorProfile.objects.all().count()
         total_admins=AdminProfile.objects.all().count()
-        total_registration=Registration.objects.all().count()
+        total_registration=Visitors.objects.all().count()
         context={
             "total_registration":total_registration,
             "total_vendors":total_vendors,

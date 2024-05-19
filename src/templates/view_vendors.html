@@ -1,7 +1,7 @@
 {% extends "admin_base.html" %}
 {% load static %}
 
-{% comment %} {% block title %}{% endblock title %} {% endcomment %}
+{% block vendorActive %}active{% endblock vendorActive %}
 {% block role %}Organizer{% endblock role %}
 
 
@@ -10,7 +10,14 @@
     <!--  Row 1 -->
 
     <div class="row">
-      <a href="create"><button class="btn btn-primary" style="float:right;">Add Vendor</button></a>
+      <div class="row">
+        <div class="col-6" >
+          <a href="export" style="width:auto;float:left"><button class="btn btn-primary" style="background-color:#333;border-color:#333">Export</button></a>
+        </div>
+        <div class="col-6" >
+        <a href="create" style="width:auto;float:right"><button class="btn btn-primary" style="float:right;">Add Vendor</button></a>
+        </div>
+      </div>
       <div class="col-lg-10 d-flex align-items-stretch mt-5 m-auto">
         <div class="card w-100">
           <div class="card-body p-4">

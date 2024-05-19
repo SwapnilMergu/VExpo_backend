@@ -9,6 +9,7 @@ from .forms import AdminProfileForm
 from users.models import CustomUser
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.core.files.storage import FileSystemStorage
+import pandas as pd
 import json
 import random
 import string
@@ -25,7 +26,7 @@ def admin_list(request):
 
 def create_admin(request):
 
-    categories= Categories.objects.all()
+    categories= Categories.objects.all().filter(superuser_id=request.user.id)
     if request.method == 'POST':
         form = AdminForm(request.POST)
         if form.is_valid():
@@ -65,11 +66,11 @@ def create_admin(request):
 
 def update_admin(request, pk):
     admin = get_object_or_404(AdminProfile,pk=pk)
-    categories= Categories.objects.all()
+    categories= Categories.objects.all().filter(superuser_id=request.user.id)
     if request.method == 'POST':
         form = AdminForm(request.POST)
         if form.is_valid():
-            admin.full_name = request.POST.get('full_name')
+            admin.full_name = request.POST.get('name')
             admin.contact = request.POST.get('contact')
             admin.category = Categories.objects.get(id=request.POST.get('category'))
 
@@ -142,15 +143,17 @@ def update_admin_profile(request):
 
             if logo:
                 if admin.logo:
-                    print("\n\n Inside if logo exisits \n\n")
+                    print("\n\n Inside if logo exisits: ",admin.logo," \n\n")
                     filename= admin.logo
                     os.remove(os.path.join(settings.MEDIA_ROOT, filename))
                 else:
                     filename= str(datetime.now())+'_'+(logo.name)
                     filename = re.sub(r'[^\w\-.]', '_', filename)
+                
                 fs = FileSystemStorage(location=settings.MEDIA_ROOT )
                 filename = fs.save(filename, logo)
                 log_url = filename
+                print("\n\n filename after add: ",filename," \n\n")
             else:
                 log_url= admin.logo
             
@@ -239,3 +242,21 @@ def update_admin_profile(request):
             print("\n\n Inside if invalid ",form.errors,"\n\n")
             return render(request,"update_admin_profile.html",{"categories":categories,"admin":admin,"social_links":social_links,"form":form})
     return redirect("organizer_profile")
+
+
+def export_admin_to_excel(request):
+    # Fetch data from your model
+    data = AdminProfile.objects.all().values("full_name", "email", "contact", "city","address","start_date","end_date","price","category__cname")
+
+    # Convert queryset to DataFrame
+    df = pd.DataFrame(list(data))
+
+    # Create a HttpResponse object with the appropriate Excel headers
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename='+str(datetime.now().date())+'_data.xlsx'
+
+    # Use Pandas to create an Excel writer and save the DataFrame to it
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    return response

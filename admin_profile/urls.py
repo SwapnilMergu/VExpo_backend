@@ -7,5 +7,6 @@ urlpatterns = [
     path('superuser/organizer/update/<int:pk>', views.update_admin, name='update_admin'),
     path('superuser/organizer/delete/<int:pk>', views.delete_admin, name='delete_admin'),
     path('organizer/profile',views.organizer_profile,name="organizer_profile"),
-    path('organizer/profile/update',views.update_admin_profile,name="update_admin_profile")
+    path('organizer/profile/update',views.update_admin_profile,name="update_admin_profile"),
+    path('superuser/organizer/export',views.export_admin_to_excel,name="export_admin_to_excel")    
 ]

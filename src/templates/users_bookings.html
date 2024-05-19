@@ -27,7 +27,7 @@ $(document).ready(function() {
     // Your logic to filter data based on selectedDate goes here
     const date= formatDate(selectedDate);
     console.log("Selected date:", date);  // Example placeholder
-    document.getElementById("date-container").innerHTML = date+" - Bookings" ;
+    document.getElementById("date-container").innerHTML = "Bookings for "+date ;
   });
   });
 
@@ -37,15 +37,17 @@ $(document).ready(function() {
 <div class="container-fluid">
     <!--  Row 1 -->
     <div class="row">
+      <a class="mb-3" href="export" style="width:auto"><button class="btn btn-primary" style="float:left;background-color:#333;border-color:#333">Export All</button></a>
       <div class="col-lg-12 d-flex align-items-stretch mt-5 m-auto">
         <div class="card w-100">
           <div class="card-body p-1">
-            <div class="row">
-              <h5 class="card-title fw-semibold fs-9 mb-4 pt-2 pb-2 col-9 m-auto" id="date-container">Today's Bookings</h5>
-              <div class="col-3 date-filter">
-                <input  type="date" value="" id="filterDate"/>
+            <div class="row mb-3">
+              <h5 class="card-title fw-semibold mb-4 pt-2 pb-2 col-9 m-auto" style="font-size:20px" id="date-container">Today Booking's</h5>
+              <div class="col-3 date-filter ">
+                <input  type="date" value="" id="filterDate" style="cursor:pointer;border-radius:5px;padding:2px"/>
+                <input  type="button" onClick="getAllBookings()" value="View All" id="viewAll" class="btn btn-primary" style="background-color: #f76b07;padding: 3px;border-color: #f76b07;margin-left:10px"/>
               </div>
-            </div>            
+            </div>         
             <div class="table-responsive">
               <table class="table text-nowrap m-0 align-middle text-center" id="bookingsTable">
                 <thead class="text-dark fs-4">
@@ -124,26 +126,15 @@ $(document).ready(function() {
 
 
               <script type="text/javascript">
-                
-                $('#filterDate').change(function() {
-                  const selectedDate = $(this).val();
-                  const date= formatDate(selectedDate);
+
+                function addData(bookings) {
                   const bookingsTable = document.getElementById('bookingsTable');
                   const tbody = bookingsTable.querySelector('tbody');  // Cache tbody element
-                  $.ajax(
-                {
-                    type:"GET",
-                    url: "/api/booking/bydate",
-                    data:{
-                             selectedDate: date
-                    },
-                    success: function( data ) 
-                    {
-                        bookings= data.context
-                        console.log("DATA : ",typeof(bookings))
-                        console.log("DATA : ",bookings)
-                        console.log("inside filter ")
-                        tbody.innerHTML = '';  // Clear existing table rows
+                  
+                  console.log("DATA : ",typeof(bookings))
+                  console.log("DATA : ",bookings)
+                  console.log("inside filter ")
+                  tbody.innerHTML = '';  // Clear existing table rows
                    
                     var count=1;
                     for(booking of bookings){
@@ -240,11 +231,44 @@ $(document).ready(function() {
                     } 
     
 
+                }
+                
+                $('#filterDate').change(function() {
+                  const selectedDate = $(this).val();
+                  const date= formatDate(selectedDate);
+                  $.ajax(
+                {
+                    type:"GET",
+                    url: "/api/booking/bydate",
+                    data:{
+                             selectedDate: date
+                    },
+                    success: function( data ) 
+                    {
+                      bookings= data.context
+                      addData(bookings);
                     }
                  })
-                  console.log("Selected date:", date);  // Example placeholder
-                  document.getElementById("date-container").innerHTML = date+" - Bookings" ;
+                  //console.log("Selected date:", date);  // Example placeholder
+                  //document.getElementById("date-container").innerHTML = date+" - Bookings" ;
                 });
+
+                function getAllBookings() {
+                  $.ajax(
+                  {
+                      type:"GET",
+                      url: "/api/bookings",
+                      data:{},
+                      success: function( data ) 
+                      {
+                        console.log("inside view all api")
+                        bookings= data.context
+                        addData(bookings);
+                      }
+                  })
+                  document.getElementById("date-container").innerHTML = "All Bookings" ;
+                }
+                
 
                
             </script>

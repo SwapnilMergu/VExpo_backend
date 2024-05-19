@@ -10,14 +10,18 @@
 {% block content %}
 <div class="container-fluid">
     <!--  Row 1 -->
-    <script>
-      var x = localStorage.getItem("token");
-      console.log("token : "+x)
-    </script>
+    
 
     <div class="row">
-      <a href="create"><button class="btn btn-primary" style="float:right;">Add Organizer</button></a>
-      <div class="col-lg-10 d-flex align-items-stretch mt-5 m-auto">
+      <div class="row">
+        <div class="col-6">
+          <a href="export" style="width:auto"><button class="btn btn-primary" style="float:left;background-color:#333;border-color:#333">Export</button></a>
+        </div>
+        <div class="col-6">
+          <a href="create" style="width:auto"><button class="btn btn-primary" style="float:right;">Add Organizer</button></a>
+        </div>
+      </div>
+      <div class="col-lg-12 d-flex align-items-stretch mt-5 m-auto">
         <div class="card w-100">
           <div class="card-body p-4">
             <h5 class="card-title fw-semibold mb-4">Organizer List</h5>
