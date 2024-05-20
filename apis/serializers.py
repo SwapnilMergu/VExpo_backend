@@ -60,7 +60,7 @@ class WishlsitSerializer(serializers.ModelSerializer):
     class Meta:
         model= Wishlist
         fields= '__all__'
-
+    
 class StallsSerializer(serializers.ModelSerializer):
     category = CategoriesSerializer(read_only=True) #serializers.SlugRelatedField(slug_field=['id','cname'], queryset=Categories.objects.all())
     vendor = VendorProfileSerializer(read_only=True)  # Nested serializer with read-only option

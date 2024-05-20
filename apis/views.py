@@ -539,7 +539,10 @@ class GetDataFromDB(APIView):
         user_item_matrix = pd.DataFrame(np.zeros((len(visitor_ids), len(stall_ids))), index=visitor_ids, columns=stall_ids)
         print("\n\nuser_item_matrix: ",user_item_matrix,"\n\n")
         for _, row in data.iterrows():
+            if row['rating']==None:
+                row['rating']=0
             user_item_matrix.at[row['visitors_id'], row['stalls_id']] = row['rating']
+
         # for visitors_id, stalls_id, rating in data[['visitors_id', 'stalls_id', 'rating']].values:
             # user_item_matrix[visitors_id - 1, stalls_id - 1] = rating
             
